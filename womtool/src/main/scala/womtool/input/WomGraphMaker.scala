@@ -9,7 +9,6 @@ import cromwell.languages.LanguageFactory
 import cromwell.languages.util.ImportResolver._
 import languages.cwl.CwlV1_0LanguageFactory
 import languages.wdl.draft2.WdlDraft2LanguageFactory
-import languages.wdl.draft3.WdlDraft3LanguageFactory
 import wom.executable.WomBundle
 import wom.expression.NoIoFunctionSet
 import wom.graph._
