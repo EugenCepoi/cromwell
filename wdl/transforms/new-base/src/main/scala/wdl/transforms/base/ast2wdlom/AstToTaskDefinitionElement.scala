@@ -5,13 +5,11 @@ import cats.syntax.validated._
 import cats.syntax.either._
 import common.collections.EnhancedCollections._
 import common.validation.ErrorOr._
-import wdl.draft3.parser.WdlParser.Ast
 import wdl.model.draft3.elements._
-import wdl.draft3.transforms.ast2wdlom.EnhancedDraft3Ast._
 
 object AstToTaskDefinitionElement {
 
-  def convert(a: Ast): ErrorOr[TaskDefinitionElement] = {
+  def convert(a: GenericAst): ErrorOr[TaskDefinitionElement] = {
     val nameElementValidation: ErrorOr[String] = astNodeToString(a.getAttribute("name")).toValidated
     val sectionsValidation: ErrorOr[Vector[TaskSectionElement]] = a.getAttributeAsVector[TaskSectionElement]("sections").toValidated
 

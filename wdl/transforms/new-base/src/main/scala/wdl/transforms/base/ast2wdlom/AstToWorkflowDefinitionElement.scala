@@ -4,18 +4,16 @@ import cats.syntax.apply._
 import cats.syntax.either._
 import cats.syntax.validated._
 import common.collections.EnhancedCollections._
+import common.transforms.CheckedAtoB
 import common.validation.ErrorOr._
 import wdl.model.draft3.elements._
 
 
 object AstToWorkflowDefinitionElement {
 
-  def convert(a: Ast): ErrorOr[WorkflowDefinitionElement] = {
-
+  def astToWorkflowDefinitionElement(astNodeToWorkflowBodyElement: CheckedAtoB[GenericAstNode, WorkflowBodyElement]): CheckedAtoB[GenericAst, WorkflowDefinitionElement] = CheckedAtoB.fromErrorOr { a: GenericAst =>
     val nameElementValidation: ErrorOr[String] = astNodeToString(a.getAttribute("name")).toValidated
-
     val bodyElementsValidation: ErrorOr[Vector[WorkflowBodyElement]] = a.getAttributeAsVector[WorkflowBodyElement]("body")(astNodeToWorkflowBodyElement).toValidated
-
     (nameElementValidation, bodyElementsValidation) flatMapN combineElements
   }
 

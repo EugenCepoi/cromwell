@@ -1,20 +1,27 @@
 package wdl.transforms.base.ast2wdlom
 
-import common.Checked
+import common.transforms.CheckedAtoB
 import common.validation.Checked._
-import wdl.draft3.parser.WdlParser.Ast
-import wdl.model.draft3.elements.IntermediateValueDeclarationElement
-import wdl.model.draft3.elements.TaskSectionElement
+import wdl.model.draft3.elements._
 
 object AstToTaskSectionElement {
-  def convert(ast: Ast): Checked[TaskSectionElement] = ast.getName match {
-    case "Inputs" => astNodeToInputsSectionElement(ast)
-    case "Outputs" => astNodeToOutputsSectionElement(ast)
-    case "Declaration" => astNodeToDeclarationContent(ast).map(IntermediateValueDeclarationElement.fromContent)
-    case "Runtime" => astNodeToRuntimeAttributesSectionElement(ast)
-    case "RawCommand" => astNodeToCommandSectionElement(ast)
-    case "Meta" => astNodeToMetaSectionElement(ast)
-    case "ParameterMeta" => astNodeToParameterMetaSectionElement(ast)
-    case other => s"No conversion defined for Ast with name $other to TaskBodyElement".invalidNelCheck
+  def astToTaskSectionElement(astNodeToInputsSectionElement: CheckedAtoB[GenericAstNode, InputsSectionElement],
+                              astNodeToOutputsSectionElement: CheckedAtoB[GenericAstNode, OutputsSectionElement],
+                              astNodeToDeclarationContent: CheckedAtoB[GenericAstNode, DeclarationContent],
+                              astNodeToRuntimeAttributesSectionElement: CheckedAtoB[GenericAstNode, RuntimeAttributesSectionElement],
+                              astNodeToCommandSectionElement: CheckedAtoB[GenericAstNode, CommandSectionElement],
+                              astNodeToMetaSectionElement: CheckedAtoB[GenericAstNode, MetaSectionElement],
+                              astNodeToParameterMetaSectionElement: CheckedAtoB[GenericAstNode, ParameterMetaSectionElement]
+                             ): CheckedAtoB[GenericAst, TaskSectionElement] = CheckedAtoB.fromCheck { a: GenericAst =>
+    a.getName match {
+      case "Inputs" => astNodeToInputsSectionElement.run(a)
+      case "Outputs" => astNodeToOutputsSectionElement(a)
+      case "Declaration" => astNodeToDeclarationContent(a).map(IntermediateValueDeclarationElement.fromContent)
+      case "Runtime" => astNodeToRuntimeAttributesSectionElement(a)
+      case "RawCommand" => astNodeToCommandSectionElement(a)
+      case "Meta" => astNodeToMetaSectionElement(a)
+      case "ParameterMeta" => astNodeToParameterMetaSectionElement(a)
+      case other => s"No conversion defined for Ast with name $other to TaskBodyElement".invalidNelCheck
+    }
   }
 }

@@ -1,12 +1,7 @@
 package wdl.transforms.base
 
-import better.files.File
-import cats.instances.either._
 import common.transforms.CheckedAtoB
 import common.validation.Checked._
-import wdl.model.draft3.elements.ExpressionElement.KvPair
-import wdl.model.draft3.elements._
-import wom.callable.{MetaKvPair, MetaValueElement}
 
 package object ast2wdlom {
 
@@ -27,7 +22,7 @@ package object ast2wdlom {
 
   implicit val astNodeToString: CheckedAtoB[GenericAstNode, String] = CheckedAtoB.fromCheck { a: GenericAstNode => a match {
     case t: GenericTerminal => t.getSourceString.validNelCheck
-    case a: GenericAst => s"Cannot convert Ast of type ${a.getName} into String. Did you want one of its attributes (${a.getAttributes.asScala.keys.mkString(", ")})?".invalidNelCheck
+    case a: GenericAst => s"Cannot convert Ast of type ${a.getName} into String. Did you want one of its attributes (${a.getAttributes.keys.mkString(", ")})?".invalidNelCheck
     case other: GenericAstNode => s"Cannot convert ${other.getClass.getSimpleName} into String".invalidNelCheck
   }}
 

@@ -67,4 +67,6 @@ trait GenericAstList extends GenericAstNode {
 trait GenericTerminal extends GenericAstNode {
   def getSourceString: String
   def getTerminalStr: String
+  def getLine: Int
+  def getColumn: Int
 }

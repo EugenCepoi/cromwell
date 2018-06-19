@@ -1,7 +1,7 @@
 package wdl.transforms.base.ast2wdlom
 
 import simulacrum.typeclass
-import scala.languageFeature.postfixOps
+import scala.language.implicitConversions
 
 @typeclass
 trait GenericAstNodeMaker[A] {

@@ -8,9 +8,9 @@ import wdl.draft3.transforms.ast2wdlom.EnhancedDraft3Ast._
 import wdl.model.draft3.elements._
 
 object AstToScatterElement {
-  def convert(ast: Ast): ErrorOr[ScatterElement] = {
+  def convert(ast: GenericAst): ErrorOr[ScatterElement] = {
 
-    val scatterVariableValidation: ErrorOr[Terminal] = ast.getAttributeAs[Terminal]("item").toValidated
+    val scatterVariableValidation: ErrorOr[GenericTerminal] = ast.getAttributeAs[GenericTerminal]("item").toValidated
 
     val scatterCollectionExpressionValidation: ErrorOr[ExpressionElement] = ast.getAttributeAs[ExpressionElement]("collection").toValidated
     val bodyValidation: ErrorOr[Vector[WorkflowGraphElement]] = ast.getAttributeAsVector[WorkflowGraphElement]("body").toValidated
