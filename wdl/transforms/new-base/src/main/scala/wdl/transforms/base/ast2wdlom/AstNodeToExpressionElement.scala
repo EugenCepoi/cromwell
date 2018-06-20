@@ -16,7 +16,9 @@ import scala.util.Try
 
 object AstNodeToExpressionElement {
 
-  def convert(astNode: GenericAstNode): ErrorOr[ExpressionElement] = astNode match {
+  def astNodeToExpressionElement(implicit astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement],
+                                 astNodeToExpressionElementKvPair: CheckedAtoB[GenericAstNode, ExpressionElement.KvPair]
+                                ): CheckedAtoB[GenericAstNode, ExpressionElement] = CheckedAtoB.fromErrorOr {
 
     case t: GenericTerminal if asPrimitive.isDefinedAt((t.getTerminalStr, t.getSourceString)) => asPrimitive((t.getTerminalStr, t.getSourceString)).map(PrimitiveLiteralExpressionElement)
     case t: GenericTerminal if t.getTerminalStr == "identifier" => IdentifierLookup(t.getSourceString).validNel
@@ -92,7 +94,8 @@ object AstNodeToExpressionElement {
     "Remainder" -> Remainder.apply
   )
 
-  private def useValidatedLhsAndRhs(a: GenericAst, combiner: BinaryOperatorElementMaker): ErrorOr[ExpressionElement] = {
+  private def useValidatedLhsAndRhs(a: GenericAst, combiner: BinaryOperatorElementMaker)
+                                   (implicit astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement]): ErrorOr[ExpressionElement] = {
     val lhsValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("lhs").toValidated
     val rhsValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("rhs").toValidated
 
@@ -204,7 +207,8 @@ object AstNodeToExpressionElement {
       s"Function $functionName expects exactly 3 arguments but got ${params.size}".invalidNel
     }
 
-  private def handleMemberAccess(ast: GenericAst): ErrorOr[ExpressionElement] = {
+  private def handleMemberAccess(ast: GenericAst)
+                                (implicit astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement]): ErrorOr[ExpressionElement] = {
 
     // Internal simplify method:
     // If the left-hand side is another member access, we can simplify them together.
@@ -225,7 +229,8 @@ object AstNodeToExpressionElement {
 
   }
 
-  private def handleStringLiteral(ast: GenericAst): ErrorOr[ExpressionElement] = {
+  private def handleStringLiteral(ast: GenericAst)
+                                 (implicit astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement]): ErrorOr[ExpressionElement] = {
     def convertStringPiece(a: GenericAstNode): ErrorOr[StringPiece] = a match {
       case simple: GenericTerminal if simple.getTerminalStr == "string" => StringLiteral(simple.getSourceString).validNel
       case expr: GenericAst if expr.getName == "ExpressionPlaceholder" => expr.getAttributeAs[ExpressionElement]("expr").toValidated.map(StringPlaceholder)
