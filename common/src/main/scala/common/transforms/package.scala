@@ -3,6 +3,7 @@ package common
 import cats.data.Kleisli
 
 import common.validation.ErrorOr.ErrorOr
+import common.validation.Validation._
 import common.validation.Checked._
 
 package object transforms {
@@ -11,8 +12,12 @@ package object transforms {
   object CheckedAtoB {
     def apply[A, B](implicit runner: CheckedAtoB[A, B]): CheckedAtoB[A, B] = runner
     def fromCheck[A, B](run: A => Checked[B]): CheckedAtoB[A, B] = Kleisli(run)
+    def fromCheck[A, B](context: String)(run: A => Checked[B]): CheckedAtoB[A, B] = Kleisli(runCheckWithContext(run, context))
     def fromErrorOr[A, B](run: A => ErrorOr[B]): CheckedAtoB[A, B] = Kleisli(runThenCheck(run))
+    def fromErrorOr[A, B](context: String)(run: A => ErrorOr[B]): CheckedAtoB[A, B] = Kleisli(runErrorOrWithContext(run, context))
     private def runThenCheck[A, B](run: A => ErrorOr[B]): A => Checked[B] = (a: A) => { run(a).toEither }
+    private def runErrorOrWithContext[A, B](run: A => ErrorOr[B], context: String): A => Checked[B] = (a: A) => { run(a).toEither.contextualizeErrors(context) }
+    private def runCheckWithContext[A, B](run: A => Checked[B], context: String): A => Checked[B] = (a: A) => { run(a).contextualizeErrors(context) }
 
     def firstSuccess[A, B](options: List[CheckedAtoB[A, B]], operationName: String): CheckedAtoB[A, B] = Kleisli[Checked, A, B] { a =>
       if (options.isEmpty) {

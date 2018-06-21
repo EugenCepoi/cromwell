@@ -16,13 +16,13 @@ import wdl.model.draft3.elements._
 
 object AstNodeToPlaceholderAttributeSet {
 
-  val attributeKvpConverter: CheckedAtoB[GenericAstList, PlaceholderAttributeSet] = {
-    val singleElement = astNodeToAst andThen CheckedAtoB.fromErrorOr(convertAttributeKvp)
+  def attributeKvpConverter(implicit astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement]): CheckedAtoB[GenericAstList, PlaceholderAttributeSet] = {
+    val singleElement = astNodeToAst andThen CheckedAtoB.fromErrorOr(convertAttributeKvp _)
 
     def convertAll(as: GenericAstList): ErrorOr[Vector[PlaceholderAttributeElement]] =
       as.astNodeList.toVector.traverse[ErrorOr, PlaceholderAttributeElement](singleElement.run(_).toValidated)
 
-    CheckedAtoB.fromErrorOr(convertAll) andThen CheckedAtoB.fromCheck(validAttributeSet)
+    CheckedAtoB.fromErrorOr(convertAll _) andThen CheckedAtoB.fromCheck(validAttributeSet _)
   }
 
   private def validAttributeSet(a: Vector[PlaceholderAttributeElement]): Checked[PlaceholderAttributeSet] = {
@@ -52,7 +52,7 @@ object AstNodeToPlaceholderAttributeSet {
     }
   }
 
-  private def convertAttributeKvp(a: GenericAst): ErrorOr[PlaceholderAttributeElement] = {
+  private def convertAttributeKvp(a: GenericAst)(implicit astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement]): ErrorOr[PlaceholderAttributeElement] = {
     (placeholderAttributeConstructor(a),
       placeholderAttributeValue(a)) mapN { (constructor, value) =>
       constructor.apply(value)
@@ -69,7 +69,7 @@ object AstNodeToPlaceholderAttributeSet {
     }
   }
 
-  private def placeholderAttributeValue(kvpAst: GenericAst): ErrorOr[String] = {
+  private def placeholderAttributeValue(kvpAst: GenericAst)(implicit astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement]): ErrorOr[String] = {
     kvpAst.getAttributeAs[ExpressionElement]("value").toValidated.flatMap {
       case StringLiteral(literalValue) => literalValue.validNel
       case StringExpression(pieces) if pieces.length == 1 => pieces.head match {

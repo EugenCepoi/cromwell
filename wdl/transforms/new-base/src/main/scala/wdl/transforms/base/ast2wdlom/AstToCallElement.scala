@@ -11,7 +11,11 @@ import wdl.model.draft3.elements.{CallBodyElement, CallElement}
 import wdl.model.draft3.elements.ExpressionElement.KvPair
 
 object AstToCallElement {
-  def convert(ast: GenericAst): ErrorOr[CallElement] = {
+
+  def astToCallElement(implicit astNodeToKvPair: CheckedAtoB[GenericAstNode, KvPair]): CheckedAtoB[GenericAst, CallElement] = CheckedAtoB.fromErrorOr { ast =>
+    def convertBodyElement(a: GenericAst): Checked[CallBodyElement] = {
+      a.getAttributeAsVector[KvPair]("inputs") map CallBodyElement
+    }
 
     val callableNameValidation: ErrorOr[String] = astNodeToString(ast.getAttribute("task")).toValidated
 
@@ -20,7 +24,7 @@ object AstToCallElement {
       case None => None.validNel
     }
 
-    implicit val astNodeToCallBodyElement: CheckedAtoB[GenericAstNode, CallBodyElement] = astNodeToAst andThen CheckedAtoB.fromCheck(AstToCallBodyElement.convert)
+    implicit val astNodeToCallBodyElement: CheckedAtoB[GenericAstNode, CallBodyElement] = astNodeToAst andThen CheckedAtoB.fromCheck(convertBodyElement _)
 
     val callBodyValidation: ErrorOr[Option[CallBodyElement]] = ast.getAttributeAsOptional[CallBodyElement]("body").toValidated
 
@@ -29,9 +33,4 @@ object AstToCallElement {
     }
   }
 
-  object AstToCallBodyElement {
-    def convert(a: GenericAst): Checked[CallBodyElement] = {
-      a.getAttributeAsVector[KvPair]("inputs") map CallBodyElement
-    }
-  }
 }

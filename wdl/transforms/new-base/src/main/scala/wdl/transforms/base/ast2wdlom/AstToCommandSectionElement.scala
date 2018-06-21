@@ -1,11 +1,13 @@
 package wdl.transforms.base.ast2wdlom
 
-import common.Checked
+import common.transforms.CheckedAtoB
 import wdl.model.draft3.elements.CommandPartElement.StringCommandPartElement
 import wdl.model.draft3.elements.{CommandPartElement, CommandSectionElement, CommandSectionLine}
 
 object AstToCommandSectionElement {
-  def convert(ast: GenericAst): Checked[CommandSectionElement] = {
+  def astToCommandSectionElement(implicit astNodeToCommandPartElement: CheckedAtoB[GenericAstNode, CommandPartElement]
+                                ): CheckedAtoB[GenericAst, CommandSectionElement] = CheckedAtoB.fromCheck("convert Ast to CommandSectionElement") { ast: GenericAst =>
+
     ast.getAttributeAsVector[CommandPartElement]("parts") map { parts =>
       val lines = makeLines(parts)
       val trimmed = trimStartAndEnd(lines)
