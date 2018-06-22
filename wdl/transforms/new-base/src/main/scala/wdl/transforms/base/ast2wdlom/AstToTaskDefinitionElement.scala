@@ -4,12 +4,15 @@ import cats.syntax.apply._
 import cats.syntax.validated._
 import cats.syntax.either._
 import common.collections.EnhancedCollections._
+import common.transforms.CheckedAtoB
 import common.validation.ErrorOr._
 import wdl.model.draft3.elements._
 
 object AstToTaskDefinitionElement {
 
-  def convert(a: GenericAst): ErrorOr[TaskDefinitionElement] = {
+  def astToTaskDefinitionElement(implicit astNodeToTaskSectionElement: CheckedAtoB[GenericAstNode, TaskSectionElement]
+                                ): CheckedAtoB[GenericAst, TaskDefinitionElement] = CheckedAtoB.fromErrorOr("convert AST to scatter section") { a =>
+
     val nameElementValidation: ErrorOr[String] = astNodeToString(a.getAttribute("name")).toValidated
     val sectionsValidation: ErrorOr[Vector[TaskSectionElement]] = a.getAttributeAsVector[TaskSectionElement]("sections").toValidated
 

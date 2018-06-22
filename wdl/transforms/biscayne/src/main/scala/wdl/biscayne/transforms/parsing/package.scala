@@ -2,7 +2,7 @@ package wdl.biscayne.transforms
 
 import better.files.File
 import common.transforms.CheckedAtoB
-import wdl.draft3.parser.WdlParser.Ast
+import wdl.biscayne.parser.WdlParser.Ast
 
 package object parsing {
   val fileToAst: CheckedAtoB[File, Ast] = CheckedAtoB.fromCheck(FileParser.convert)

@@ -1,10 +1,10 @@
 package wdl.biscayne.transforms.parsing
 
 import scala.collection.JavaConverters._
-import wdl.draft3.parser.WdlParser._
+import wdl.biscayne.parser.WdlParser._
 import wom.core.WorkflowSource
 
-case class WdlDraft3SyntaxErrorFormatter(terminalMap: Map[Terminal, WorkflowSource]) extends SyntaxErrorFormatter {
+case class WdlBiscayneSyntaxErrorFormatter(terminalMap: Map[Terminal, WorkflowSource]) extends SyntaxErrorFormatter {
 
   private def pointToSource(t: Terminal): String = s"${line(t)}\n${" " * (t.getColumn - 1)}^"
 

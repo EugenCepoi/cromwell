@@ -20,12 +20,12 @@ import collection.JavaConverters._
 object AstNodeToPlaceholderAttributeSet {
 
   val attributeKvpConverter: CheckedAtoB[AstList, PlaceholderAttributeSet] = {
-    val singleElement = astNodeToAst andThen CheckedAtoB.fromErrorOr(convertAttributeKvp)
+    val singleElement = astNodeToAst andThen CheckedAtoB.fromErrorOr(convertAttributeKvp _)
 
     def convertAll(as: AstList): ErrorOr[Vector[PlaceholderAttributeElement]] =
       as.asScala.toVector.traverse[ErrorOr, PlaceholderAttributeElement](singleElement.run(_).toValidated)
 
-    CheckedAtoB.fromErrorOr(convertAll) andThen CheckedAtoB.fromCheck(validAttributeSet)
+    CheckedAtoB.fromErrorOr(convertAll _) andThen CheckedAtoB.fromCheck(validAttributeSet _)
   }
 
   private def validAttributeSet(a: Vector[PlaceholderAttributeElement]): Checked[PlaceholderAttributeSet] = {

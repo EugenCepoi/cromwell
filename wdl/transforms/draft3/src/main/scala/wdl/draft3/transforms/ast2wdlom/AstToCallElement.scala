@@ -22,7 +22,7 @@ object AstToCallElement {
       case None => None.validNel
     }
 
-    implicit val astNodeToCallBodyElement: CheckedAtoB[AstNode, CallBodyElement] = astNodeToAst andThen CheckedAtoB.fromCheck(AstToCallBodyElement.convert)
+    implicit val astNodeToCallBodyElement: CheckedAtoB[AstNode, CallBodyElement] = astNodeToAst andThen CheckedAtoB.fromCheck(AstToCallBodyElement.convert _)
 
     val callBodyValidation: ErrorOr[Option[CallBodyElement]] = ast.getAttributeAsOptional[CallBodyElement]("body").toValidated
 

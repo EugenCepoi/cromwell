@@ -2,11 +2,14 @@ package wdl.transforms.base.ast2wdlom
 
 import cats.syntax.apply._
 import cats.syntax.either._
+import common.transforms.CheckedAtoB
 import common.validation.ErrorOr.ErrorOr
 import wdl.model.draft3.elements._
 
 object AstToScatterElement {
-  def convert(ast: GenericAst): ErrorOr[ScatterElement] = {
+  def astToScatterElement(implicit astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement],
+                          astNodeToWorkflowGraphElement: CheckedAtoB[GenericAstNode, WorkflowGraphElement]
+                         ): CheckedAtoB[GenericAst, ScatterElement] = CheckedAtoB.fromErrorOr("convert AST to scatter section") { ast =>
 
     val scatterVariableValidation: ErrorOr[GenericTerminal] = ast.getAttributeAs[GenericTerminal]("item").toValidated
 

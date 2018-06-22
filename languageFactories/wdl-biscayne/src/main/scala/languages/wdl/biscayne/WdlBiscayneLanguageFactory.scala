@@ -10,10 +10,10 @@ import cromwell.core._
 import cromwell.languages.util.ImportResolver._
 import cromwell.languages.util.{ImportResolver, LanguageFactoryUtil}
 import cromwell.languages.{LanguageFactory, ValidatedWomNamespace}
-import wdl.draft3.transforms.ast2wdlom._
-import wdl.draft3.transforms.parsing._
-import wdl.draft3.transforms.wdlom2wom._
-import wdl.draft3.transforms.wdlom2wom.WomBundleToWomExecutable._
+import wdl.biscayne.transforms.ast2wdlom._
+import wdl.biscayne.transforms.parsing._
+import wdl.biscayne.transforms.wdlom2wom._
+import wdl.biscayne.transforms.wdlom2wom.WomBundleToWomExecutable._
 import wom.core.{WorkflowJson, WorkflowOptionsJson, WorkflowSource}
 import wom.executable.WomBundle
 import wom.expression.IoFunctionSet

@@ -15,7 +15,7 @@ object AstToImportElement {
     val importPath: ErrorOr[String] = a.getAttributeAs[String]("uri").toValidated
     val alias: ErrorOr[Option[String]] = a.getAttributeAsOptional[String]("namespace").toValidated
 
-    val aliasElementMaker: CheckedAtoB[AstNode, ImportStructRenameElement] = astNodeToAst andThen CheckedAtoB.fromErrorOr(convertAliasElement)
+    val aliasElementMaker: CheckedAtoB[AstNode, ImportStructRenameElement] = astNodeToAst andThen CheckedAtoB.fromErrorOr(convertAliasElement _)
     val structRenames: ErrorOr[Vector[ImportStructRenameElement]] = a.getAttributeAsVector[ImportStructRenameElement]("aliases")(aliasElementMaker).toValidated
     val structRenameMap: ErrorOr[Map[String, String]] = structRenames.map(_.map(rename => rename.oldName -> rename.newName).toMap)
 
