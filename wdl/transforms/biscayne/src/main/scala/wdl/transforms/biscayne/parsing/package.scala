@@ -1,4 +1,4 @@
-package wdl.biscayne.transforms
+package wdl.transforms.biscayne
 
 import better.files.File
 import common.transforms.CheckedAtoB

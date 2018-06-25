@@ -1,14 +1,13 @@
-package wdl.biscayne.transforms.parsing
+package wdl.transforms.biscayne.parsing
 
 import better.files.File
 import common.Checked
-
-import scala.collection.JavaConverters._
 import common.validation.Validation.TryValidation
 import wdl.biscayne.parser.WdlParser
 import wdl.biscayne.parser.WdlParser.Ast
 import wom.core.WorkflowSource
 
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 object StringParser {
