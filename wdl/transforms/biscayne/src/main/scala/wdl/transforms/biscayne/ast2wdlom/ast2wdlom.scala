@@ -1,21 +1,27 @@
 package wdl.transforms.biscayne
 
+//import cats.instances.either._
 import common.transforms.CheckedAtoB
 import common.validation.Checked._
 import wdl.biscayne.parser.WdlParser.{Ast, AstNode}
+import wdl.model.draft3.elements.ExpressionElement.KvPair
+import wdl.model.draft3.elements._
 import wdl.transforms.base.ast2wdlom._
-import wom.callable.{MetaKvPair, MetaValueElement}
+//import wom.callable.{MetaKvPair, MetaValueElement}
 
 package object ast2wdlom {
 
   val wrapAst: CheckedAtoB[Ast, GenericAst] = CheckedAtoB.fromCheck { a => BiscayneGenericAst(a).validNelCheck }
   val wrapAstNode: CheckedAtoB[AstNode, GenericAstNode] = CheckedAtoB.fromCheck { a => BiscayneGenericAstNode(a).validNelCheck }
 
-  //  // meta sections
-  implicit lazy val astNodeToMetaValueElement: CheckedAtoB[GenericAstNode, MetaValueElement] = AstNodeToMetaValueElement.astNodeToMetaValueElement
-  implicit lazy val astNodeToMetaKvPair: CheckedAtoB[GenericAstNode, MetaKvPair] = AstNodeToMetaKvPair.astNodeToMetaKvPair
-//  implicit val astNodeToMetaSectionElement: CheckedAtoB[AstNode, MetaSectionElement] = astNodeToAst andThen CheckedAtoB.fromCheck(AstToMetaSectionElement.convert _)
-//  implicit val astNodeToParameterMetaSectionElement: CheckedAtoB[AstNode, ParameterMetaSectionElement] = astNodeToAst andThen CheckedAtoB.fromCheck(AstToParameterMetaSectionElement.convert _)
+  // meta sections
+//  implicit lazy val astNodeToMetaValueElement: CheckedAtoB[GenericAstNode, MetaValueElement] = AstNodeToMetaValueElement.astNodeToMetaValueElement
+//  implicit lazy val astNodeToMetaKvPair: CheckedAtoB[GenericAstNode, MetaKvPair] = AstNodeToMetaKvPair.astNodeToMetaKvPair
+//  implicit val astNodeToMetaSectionElement: CheckedAtoB[GenericAstNode, MetaSectionElement] = astNodeToAst andThen AstToMetaSectionElement.astToMetaSectionElement
+//  implicit val astNodeToParameterMetaSectionElement: CheckedAtoB[GenericAstNode, ParameterMetaSectionElement] = astNodeToAst andThen AstToParameterMetaSectionElement.astToParameterMetaSectionElement
+
+  implicit lazy val astNodeToKvPair: CheckedAtoB[GenericAstNode, KvPair] = AstNodeToKvPair.astNodeToKvPair
+  implicit val astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement] = AstNodeToExpressionElement.astNodeToExpressionElement
 
 //  implicit val astToFileElement: CheckedAtoB[Ast, FileElement] = CheckedAtoB.fromErrorOr(AstToFileElement.convert)
 //  implicit val astToFileBodyElement: CheckedAtoB[AstNode, FileBodyElement] = astNodeToAst andThen CheckedAtoB.fromCheck(AstToFileBodyElement.convert _)
@@ -26,8 +32,6 @@ package object ast2wdlom {
 //  implicit val astNodeToInputsSectionElement: CheckedAtoB[AstNode, InputsSectionElement] = astNodeToAst andThen CheckedAtoB.fromCheck(AstToInputsSectionElement.convert _)
 //  implicit val astNodeToInputDeclarationElement: CheckedAtoB[AstNode, InputDeclarationElement] = astNodeToAst andThen CheckedAtoB.fromErrorOr(AstToInputDeclarationElement.convert _)
 //  implicit val astNodeToTypeElement: CheckedAtoB[AstNode, TypeElement] = CheckedAtoB.fromErrorOr(AstNodeToTypeElement.convert)
-//  implicit val astNodeToExpressionElement: CheckedAtoB[AstNode, ExpressionElement] = CheckedAtoB.fromErrorOr(AstNodeToExpressionElement.convert)
-//  implicit val astNodeToKvPair: CheckedAtoB[AstNode, KvPair] = CheckedAtoB.fromErrorOr(AstNodeToKvPair.convert)
 //  implicit val astNodeToTaskSectionElement: CheckedAtoB[AstNode, TaskSectionElement] = astNodeToAst andThen CheckedAtoB.fromCheck(AstToTaskSectionElement.convert _)
 //  implicit val astNodeToWorkflowBodyElement: CheckedAtoB[AstNode, WorkflowBodyElement] = astNodeToAst andThen CheckedAtoB.fromCheck(AstToWorkflowBodyElement.convert _)
 //  implicit val astNodeToOutputsSectionElement: CheckedAtoB[AstNode, OutputsSectionElement] = astNodeToAst andThen CheckedAtoB.fromCheck(AstToOutputsSectionElement.convert _)
