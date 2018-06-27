@@ -53,6 +53,7 @@ case class GenomicsFactory(applicationName: String, authMode: GoogleAuthMode, en
         createPipelineParameters.commandScriptContainerPath.pathAsString,
         mounts,
         createPipelineParameters.jobShell,
+        createPipelineParameters.dockerEncryptionKeyName,
         createPipelineParameters.encryptedDockerCredentials
       )
       
@@ -118,4 +119,6 @@ case class GenomicsFactory(applicationName: String, authMode: GoogleAuthMode, en
       genomics.pipelines().run(pipelineRequest).buildHttpRequest()
     }
   }
+
+  override def usesEncryptedDocker: Boolean = true
 }

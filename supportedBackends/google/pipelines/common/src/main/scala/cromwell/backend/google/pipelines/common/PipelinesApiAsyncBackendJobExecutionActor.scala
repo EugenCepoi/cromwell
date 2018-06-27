@@ -399,6 +399,7 @@ class PipelinesApiAsyncBackendJobExecutionActor(override val standardParams: Sta
       backendLabels,
       preemptible,
       pipelinesConfiguration.jobShell,
+      pipelinesConfiguration.dockerEncryptionKeyName,
       pipelinesConfiguration.encryptedDockerCredentials
     )
   }
