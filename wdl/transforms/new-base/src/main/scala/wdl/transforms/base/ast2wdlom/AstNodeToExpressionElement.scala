@@ -19,25 +19,33 @@ object AstNodeToExpressionElement {
   def astNodeToExpressionElement(implicit astNodeToExpressionElementKvPair: CheckedAtoB[GenericAstNode, ExpressionElement.KvPair]
                                 ): CheckedAtoB[GenericAstNode, ExpressionElement] = {
 
-    def convert(ast: GenericAstNode): ErrorOr[ExpressionElement] = ast match {
+    CheckedAtoB.fromErrorOr("convert AST node to ExpressionElement")(convert _)
+
+  }
+
+  private def convert(ast: GenericAstNode)
+                     (implicit astNodeToExpressionElementKvPair: CheckedAtoB[GenericAstNode, ExpressionElement.KvPair]
+                     ): ErrorOr[ExpressionElement] = {
+    implicit val recursiveConverter = CheckedAtoB.fromErrorOr(convert _)
+    ast match {
 
       case t: GenericTerminal if asPrimitive.isDefinedAt((t.getTerminalStr, t.getSourceString)) => asPrimitive((t.getTerminalStr, t.getSourceString)).map(PrimitiveLiteralExpressionElement)
       case t: GenericTerminal if t.getTerminalStr == "identifier" => IdentifierLookup(t.getSourceString).validNel
 
-      case a: GenericAst if a.getName == "StringLiteral" => handleStringLiteral(a)(CheckedAtoB.fromErrorOr(convert _))
-      case a: GenericAst if lhsRhsOperators.contains(a.getName) => useValidatedLhsAndRhs(a, lhsRhsOperators(a.getName))(CheckedAtoB.fromErrorOr(convert _))
-      case a: GenericAst if unaryOperators.contains(a.getName) => a.getAttributeAs[ExpressionElement]("expression")(CheckedAtoB.fromErrorOr(convert _)).map(unaryOperators(a.getName)).toValidated
-      case a: GenericAst if a.getName == "TupleLiteral" => (a.getAttributeAsVector[ExpressionElement]("values")(CheckedAtoB.fromErrorOr(convert _)) flatMap {
+      case a: GenericAst if a.getName == "StringLiteral" => handleStringLiteral(a)
+      case a: GenericAst if lhsRhsOperators.contains(a.getName) => useValidatedLhsAndRhs(a, lhsRhsOperators(a.getName))
+      case a: GenericAst if unaryOperators.contains(a.getName) => a.getAttributeAs[ExpressionElement]("expression").map(unaryOperators(a.getName)).toValidated
+      case a: GenericAst if a.getName == "TupleLiteral" => (a.getAttributeAsVector[ExpressionElement]("values") flatMap {
         case pair if pair.length == 2 => PairLiteral(pair.head, pair(1)).validNelCheck
         case singleton if singleton.length == 1 => singleton.head.validNelCheck
         case more => s"No WDL support for ${more.size}-tuples in draft 3".invalidNelCheck
       }).toValidated
-      case a: GenericAst if a.getName == "ArrayLiteral" => a.getAttributeAsVector[ExpressionElement]("values")(CheckedAtoB.fromErrorOr(convert _)).toValidated.map(ArrayLiteral)
+      case a: GenericAst if a.getName == "ArrayLiteral" => a.getAttributeAsVector[ExpressionElement]("values").toValidated.map(ArrayLiteral)
       case a: GenericAst if a.getName == "ArrayOrMapLookup" => {
-        (a.getAttributeAs[ExpressionElement]("lhs")(CheckedAtoB.fromErrorOr(convert _)).toValidated: ErrorOr[ExpressionElement],
-          a.getAttributeAs[ExpressionElement]("rhs")(CheckedAtoB.fromErrorOr(convert _)).toValidated: ErrorOr[ExpressionElement]) mapN IndexAccess
+        (a.getAttributeAs[ExpressionElement]("lhs").toValidated: ErrorOr[ExpressionElement],
+          a.getAttributeAs[ExpressionElement]("rhs").toValidated: ErrorOr[ExpressionElement]) mapN IndexAccess
       }
-      case a: GenericAst if a.getName == "MemberAccess" => handleMemberAccess(a)(CheckedAtoB.fromErrorOr(convert _))
+      case a: GenericAst if a.getName == "MemberAccess" => handleMemberAccess(a)
       case a: GenericAst if a.getName == "ObjectLiteral" =>
         (for {
           objectKvs <- a.getAttributeAsVector[KvPair]("map")
@@ -47,8 +55,8 @@ object AstNodeToExpressionElement {
         final case class MapKvPair(key: ExpressionElement, value: ExpressionElement)
         def convertOnePair(astNode: GenericAstNode): ErrorOr[MapKvPair] = astNode match {
           case a: GenericAst if a.getName == "ObjectKV" || a.getName == "MapLiteralKv" =>
-            val keyValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("key")(CheckedAtoB.fromErrorOr(convert _)).toValidated
-            val valueValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("value")(CheckedAtoB.fromErrorOr(convert _)).toValidated
+            val keyValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("key").toValidated
+            val valueValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("value").toValidated
 
             (keyValidation, valueValidation) mapN { (key, value) => MapKvPair(key, value) }
         }
@@ -59,13 +67,13 @@ object AstNodeToExpressionElement {
           asMap = mapKvs.map(kv => kv.key -> kv.value).toMap
         } yield MapLiteral(asMap)).toValidated
       case a: GenericAst if a.getName == "TernaryIf" =>
-        val conditionValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("cond")(CheckedAtoB.fromErrorOr(convert _)).toValidated
-        val ifTrueValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("iftrue")(CheckedAtoB.fromErrorOr(convert _)).toValidated
-        val ifFalseValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("iffalse")(CheckedAtoB.fromErrorOr(convert _)).toValidated
+        val conditionValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("cond").toValidated
+        val ifTrueValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("iftrue").toValidated
+        val ifFalseValidation: ErrorOr[ExpressionElement] = a.getAttributeAs[ExpressionElement]("iffalse").toValidated
         (conditionValidation, ifTrueValidation, ifFalseValidation) mapN { (cond, ifTrue, ifFalse) => TernaryIf(cond, ifTrue, ifFalse) }
       case a: GenericAst if a.getName == "FunctionCall" =>
         val functionNameValidation: ErrorOr[String] = a.getAttributeAs[String]("name").toValidated
-        val argsValidation: ErrorOr[Vector[ExpressionElement]] = a.getAttributeAsVector[ExpressionElement]("params")(CheckedAtoB.fromErrorOr(convert _)).toValidated
+        val argsValidation: ErrorOr[Vector[ExpressionElement]] = a.getAttributeAsVector[ExpressionElement]("params").toValidated
 
         (functionNameValidation, argsValidation) flatMapN {
           case (name, params) if engineFunctionMakers.contains(name) => engineFunctionMakers(name).apply(params)
@@ -76,9 +84,6 @@ object AstNodeToExpressionElement {
       case unknownTerminal: GenericTerminal => s"No rule available to create ExpressionElement from terminal: ${unknownTerminal.getTerminalStr} ${unknownTerminal.getSourceString}".invalidNel
       case unknownAst: GenericAst => s"No rule available to create ExpressionElement from Ast: ${unknownAst.getName}".invalidNel
     }
-
-    CheckedAtoB.fromErrorOr("convert AST node to ExpressionElement")(convert _)
-
   }
 
   private type BinaryOperatorElementMaker = (ExpressionElement, ExpressionElement) => ExpressionElement
