@@ -9,7 +9,7 @@ import wdl.model.draft3.elements.{ExpressionElement, InputDeclarationElement, Ty
 
 object AstToInputDeclarationElement {
 
-  def astToInputDeclarationElement(astNodeToTypeElement: CheckedAtoB[GenericAstNode, TypeElement],
+  def astToInputDeclarationElement(implicit astNodeToTypeElement: CheckedAtoB[GenericAstNode, TypeElement],
                                    astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement]): CheckedAtoB[GenericAst, InputDeclarationElement] = CheckedAtoB.fromErrorOr { a: GenericAst =>
     val nameValidation: ErrorOr[String] = astNodeToString(a.getAttribute("name")).toValidated
     val inputTypeValidation: ErrorOr[TypeElement] = astNodeToTypeElement(a.getAttribute("type")).toValidated

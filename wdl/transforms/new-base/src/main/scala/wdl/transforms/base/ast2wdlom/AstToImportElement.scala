@@ -9,9 +9,9 @@ import wdl.model.draft3.elements.{ImportElement, LanguageElement}
 
 object AstToImportElement {
 
+  def astToImportElement: CheckedAtoB[GenericAst, ImportElement] = CheckedAtoB.fromErrorOr("convert Ast to ImportElement")(convert)
 
-
-  def convert(a: GenericAst): ErrorOr[ImportElement] = {
+  private def convert(a: GenericAst): ErrorOr[ImportElement] = {
     val importPath: ErrorOr[String] = a.getAttributeAs[String]("uri").toValidated
     val alias: ErrorOr[Option[String]] = a.getAttributeAsOptional[String]("namespace").toValidated
 

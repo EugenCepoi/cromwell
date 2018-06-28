@@ -11,7 +11,8 @@ import wdl.model.draft3.elements._
 
 object AstToWorkflowDefinitionElement {
 
-  def astToWorkflowDefinitionElement(astNodeToWorkflowBodyElement: CheckedAtoB[GenericAstNode, WorkflowBodyElement]): CheckedAtoB[GenericAst, WorkflowDefinitionElement] = CheckedAtoB.fromErrorOr { a: GenericAst =>
+  def astToWorkflowDefinitionElement(implicit astNodeToWorkflowBodyElement: CheckedAtoB[GenericAstNode, WorkflowBodyElement]
+                                    ): CheckedAtoB[GenericAst, WorkflowDefinitionElement] = CheckedAtoB.fromErrorOr { a: GenericAst =>
     val nameElementValidation: ErrorOr[String] = astNodeToString(a.getAttribute("name")).toValidated
     val bodyElementsValidation: ErrorOr[Vector[WorkflowBodyElement]] = a.getAttributeAsVector[WorkflowBodyElement]("body")(astNodeToWorkflowBodyElement).toValidated
     (nameElementValidation, bodyElementsValidation) flatMapN combineElements

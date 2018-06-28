@@ -5,7 +5,7 @@ import common.validation.Checked._
 import wdl.model.draft3.elements._
 
 object AstToWorkflowGraphNodeElement {
-  def astToWorkflowGraphNodeElement(astNodeToDeclarationContent: CheckedAtoB[GenericAstNode, DeclarationContent],
+  def astToWorkflowGraphNodeElement(implicit astNodeToDeclarationContent: CheckedAtoB[GenericAstNode, DeclarationContent],
                                     astNodeToCallElement: CheckedAtoB[GenericAstNode, CallElement],
                                     astNodeToScatterElement: CheckedAtoB[GenericAstNode, ScatterElement],
                                     astNodeToIfElement: CheckedAtoB[GenericAstNode, IfElement]

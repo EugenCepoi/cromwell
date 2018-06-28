@@ -5,7 +5,7 @@ import common.validation.Checked._
 import wdl.model.draft3.elements._
 
 object AstToTaskSectionElement {
-  def astToTaskSectionElement(astNodeToInputsSectionElement: CheckedAtoB[GenericAstNode, InputsSectionElement],
+  def astToTaskSectionElement(implicit astNodeToInputsSectionElement: CheckedAtoB[GenericAstNode, InputsSectionElement],
                               astNodeToOutputsSectionElement: CheckedAtoB[GenericAstNode, OutputsSectionElement],
                               astNodeToDeclarationContent: CheckedAtoB[GenericAstNode, DeclarationContent],
                               astNodeToRuntimeAttributesSectionElement: CheckedAtoB[GenericAstNode, RuntimeAttributesSectionElement],

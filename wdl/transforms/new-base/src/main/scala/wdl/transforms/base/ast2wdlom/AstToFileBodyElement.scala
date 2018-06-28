@@ -7,6 +7,12 @@ import wdl.model.draft3.elements.{FileBodyElement, StructElement, TaskDefinition
 
 object AstToFileBodyElement {
 
+  def astToFileBodyElement(implicit workflowConverter: CheckedAtoB[GenericAst, WorkflowDefinitionElement],
+                           taskConverter: CheckedAtoB[GenericAst, TaskDefinitionElement],
+                           structConverter: CheckedAtoB[GenericAst, StructElement]): CheckedAtoB[GenericAst, FileBodyElement] = {
+    CheckedAtoB.fromCheck("convert AST to FileBodyElement")(convert(workflowConverter, taskConverter, structConverter))
+  }
+
   def convert(workflowConverter: CheckedAtoB[GenericAst, WorkflowDefinitionElement],
               taskConverter: CheckedAtoB[GenericAst, TaskDefinitionElement],
               structConverter: CheckedAtoB[GenericAst, StructElement])

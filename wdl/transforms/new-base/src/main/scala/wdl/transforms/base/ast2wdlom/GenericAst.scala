@@ -50,6 +50,20 @@ trait GenericAst extends GenericAstNode {
   }
 
   /**
+    * Will get an attribute on this Ast as an AstList and then convert that into a vector of Ast
+    * @param attr The attribute to read from this Ast
+    */
+  def getAttributeAsVectorF[A](attr: String)(toA: GenericAstNode => Checked[A]): Checked[Vector[A]] = {
+    for {
+      asVector <- getAttributeAsAstNodeVector(attr)
+      // This toValidated/toEither dance is necessary to
+      // (1) collect all errors from the traverse as an ErrorOr, then
+      // (2) convert back into a Checked for the flatMap
+      result <- asVector.traverse(item => toA(item).toValidated).toEither
+    } yield result
+  }
+
+  /**
     * Gets an attribute on this Ast as an Optional Ast, returns an empty Option if the attribute is empty.
     */
   def getAttributeAsOptional[A](attr: String)(implicit toA: CheckedAtoB[GenericAstNode, A]): Checked[Option[A]] =  {

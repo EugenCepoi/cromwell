@@ -5,7 +5,7 @@ import common.validation.Checked._
 import wdl.model.draft3.elements._
 
 object AstToWorkflowBodyElement {
-  def astToWorkflowBodyElement(astNodeToInputsSectionElement: CheckedAtoB[GenericAstNode, InputsSectionElement],
+  def astToWorkflowBodyElement(implicit astNodeToInputsSectionElement: CheckedAtoB[GenericAstNode, InputsSectionElement],
                                astNodeToOutputsSectionElement: CheckedAtoB[GenericAstNode, OutputsSectionElement],
                                astNodeToMetaSectionElement: CheckedAtoB[GenericAstNode, MetaSectionElement],
                                astNodeToParameterMetaSectionElement: CheckedAtoB[GenericAstNode, ParameterMetaSectionElement],
