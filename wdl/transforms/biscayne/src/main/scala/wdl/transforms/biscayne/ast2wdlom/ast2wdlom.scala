@@ -21,8 +21,8 @@ package object ast2wdlom {
   implicit val astNodeToMetaSectionElement: CheckedAtoB[GenericAstNode, MetaSectionElement] = astNodeToAst andThen AstToMetaSectionElement.astToMetaSectionElement
   implicit val astNodeToParameterMetaSectionElement: CheckedAtoB[GenericAstNode, ParameterMetaSectionElement] = astNodeToAst andThen AstToParameterMetaSectionElement.astToParameterMetaSectionElement
 
-  implicit lazy val astNodeToKvPair: CheckedAtoB[GenericAstNode, KvPair] = AstNodeToKvPair.astNodeToKvPair(astNodeToExpressionElement)
   implicit val astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement] = AstNodeToExpressionElement.astNodeToExpressionElement
+  implicit val astNodeToKvPair: CheckedAtoB[GenericAstNode, KvPair] = AstNodeToKvPair.astNodeToKvPair(astNodeToExpressionElement)
 
   implicit val astNodeToTypeElement: CheckedAtoB[GenericAstNode, TypeElement] = AstNodeToTypeElement.astNodeToTypeElement()
   implicit val astToStructElement: CheckedAtoB[GenericAst, StructElement] = AstToStructElement.astToStructElement
@@ -34,10 +34,16 @@ package object ast2wdlom {
   implicit val astNodeToDeclarationContent: CheckedAtoB[GenericAstNode, DeclarationContent] = astNodeToAst andThen AstToDeclarationContent.astToDeclarationContent
   implicit val astNodeToOutputsSectionElement: CheckedAtoB[GenericAstNode, OutputsSectionElement] = astNodeToAst andThen AstToOutputsSectionElement.astToOutputSectionElement
 
-  implicit lazy val astNodeToGraphElement: CheckedAtoB[GenericAstNode, WorkflowGraphElement] = astNodeToAst andThen AstToWorkflowGraphNodeElement.astToWorkflowGraphNodeElement
+  val astToWorkflowGraphNodeElementConverterMaker = new AstToWorkflowGraphNodeElementConverterMaker()
+  implicit val astNodeToGraphElement: CheckedAtoB[GenericAstNode, WorkflowGraphElement] = astNodeToAst andThen astToWorkflowGraphNodeElementConverterMaker.converter
   implicit val astNodeToCallElement: CheckedAtoB[GenericAstNode, CallElement] = astNodeToAst andThen AstToCallElement.astToCallElement
   implicit val astNodeToScatterElement: CheckedAtoB[GenericAstNode, ScatterElement] = astNodeToAst andThen AstToScatterElement.astToScatterElement
   implicit val astNodeToIfElement: CheckedAtoB[GenericAstNode, IfElement] = astNodeToAst andThen AstToIfElement.astToIfElement
+  astToWorkflowGraphNodeElementConverterMaker.astNodeToScatterElement = Some(astNodeToScatterElement)
+  astToWorkflowGraphNodeElementConverterMaker.astNodeToIfElement = Some(astNodeToIfElement)
+  astToWorkflowGraphNodeElementConverterMaker.astNodeToCallElement = Some(astNodeToCallElement)
+  astToWorkflowGraphNodeElementConverterMaker.astNodeToDeclarationContent = Some(astNodeToDeclarationContent)
+
   implicit val astNodeToWorkflowBodyElement: CheckedAtoB[GenericAstNode, WorkflowBodyElement] = astNodeToAst andThen AstToWorkflowBodyElement.astToWorkflowBodyElement
   implicit val astToWorkflowDefinitionElement: CheckedAtoB[GenericAst, WorkflowDefinitionElement] = AstToWorkflowDefinitionElement.astToWorkflowDefinitionElement
 
@@ -52,11 +58,5 @@ package object ast2wdlom {
 
   implicit val astToFileElement: CheckedAtoB[GenericAst, FileElement] = AstToFileElement.astToFileElement
   implicit val fileToFileElement: CheckedAtoB[File, FileElement] = fileToAst andThen wrapAst andThen astToFileElement
-//
-//  implicit val astNodeToString: CheckedAtoB[AstNode, String] = CheckedAtoB.fromCheck { a: AstNode => a match {
-//    case t: Terminal => t.getSourceString.validNelCheck
-//    case a: Ast => s"Cannot convert Ast of type ${a.getName} into String. Did you want one of its attributes (${a.getAttributes.asScala.keys.mkString(", ")})?".invalidNelCheck
-//    case other: AstNode => s"Cannot convert ${other.getClass.getSimpleName} into String".invalidNelCheck
-//  }}
-//
+
 }

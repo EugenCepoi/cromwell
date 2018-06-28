@@ -16,17 +16,15 @@ import scala.util.Try
 
 object AstNodeToExpressionElement {
 
-  def astNodeToExpressionElement(implicit astNodeToExpressionElementKvPair: CheckedAtoB[GenericAstNode, ExpressionElement.KvPair]
-                                ): CheckedAtoB[GenericAstNode, ExpressionElement] = {
+  def astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement] = {
 
     CheckedAtoB.fromErrorOr("convert AST node to ExpressionElement")(convert _)
 
   }
 
-  private def convert(ast: GenericAstNode)
-                     (implicit astNodeToExpressionElementKvPair: CheckedAtoB[GenericAstNode, ExpressionElement.KvPair]
-                     ): ErrorOr[ExpressionElement] = {
+  protected def convert(ast: GenericAstNode): ErrorOr[ExpressionElement] = {
     implicit val recursiveConverter = CheckedAtoB.fromErrorOr(convert _)
+    implicit val recursiveKvConverter = AstNodeToKvPair.astNodeToKvPair
     ast match {
 
       case t: GenericTerminal if asPrimitive.isDefinedAt((t.getTerminalStr, t.getSourceString)) => asPrimitive((t.getTerminalStr, t.getSourceString)).map(PrimitiveLiteralExpressionElement)

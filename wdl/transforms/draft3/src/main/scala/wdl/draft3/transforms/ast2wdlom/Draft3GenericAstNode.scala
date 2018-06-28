@@ -1,11 +1,11 @@
-package wdl.transforms.biscayne.ast2wdlom
+package wdl.draft3.transforms.ast2wdlom
 
-import wdl.biscayne.parser.WdlParser.{Ast, AstList, AstNode, Terminal}
+import wdl.draft3.parser.WdlParser.{Ast, AstList, AstNode, Terminal}
 import wdl.transforms.base.ast2wdlom.{GenericAst, GenericAstList, GenericAstNode, GenericTerminal}
 import scala.collection.JavaConverters._
 
 case class BiscayneGenericAst(ast: Ast) extends GenericAst {
-  override def getAttribute(attr: String): GenericAstNode = Option(ast.getAttribute(attr)).map(BiscayneGenericAstNode.apply).orNull
+  override def getAttribute(attr: String): GenericAstNode = BiscayneGenericAstNode(ast.getAttribute(attr))
   override def getAttributes: Map[String, GenericAstNode] = ast.getAttributes.asScala.toMap map { case (key, value) => key -> BiscayneGenericAstNode(value) }
   override def getName: String = ast.getName
 }
@@ -26,7 +26,5 @@ object BiscayneGenericAstNode {
     case list: AstList => BiscayneGenericAstList(list)
     case ast: Ast => BiscayneGenericAst(ast)
     case terminal: Terminal => BiscayneGenericTerminal(terminal)
-    case null =>
-      throw new Exception()
   }
 }
