@@ -62,6 +62,7 @@ class WdlDraft3LanguageFactory(override val config: Map[String, Any]) extends La
     val trimStart = content.lines.dropWhile { l =>
       l.forall(_.isWhitespace) || l.dropWhile(_.isWhitespace).startsWith("#")
     }
-    trimStart.next.dropWhile(_.isWhitespace).startsWith("version 1.0")
+    val start = trimStart.next.dropWhile(_.isWhitespace)
+    start.startsWith("version 1.0") || start.startsWith("version draft-3")
   }
 }
