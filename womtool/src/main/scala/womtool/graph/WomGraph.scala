@@ -14,7 +14,7 @@ import cwl.CwlDecoder
 import cwl.preprocessor.CwlPreProcessor
 import spray.json.{JsArray, JsBoolean, JsNull, JsNumber, JsObject, JsString, JsValue}
 import wdl.draft2.model.{WdlNamespace, WdlNamespaceWithWorkflow}
-import wdl.draft3.transforms.wdlom2wom.{FileElementToWomBundleInputs, fileElementToWomBundle}
+import wdl.transforms.base.wdlom2wom.{FileElementToWomBundleInputs, fileElementToWomBundle}
 import wdl.draft3.transforms.ast2wdlom.{astToFileElement, wrapAst}
 import wdl.draft3.transforms.parsing.fileToAst
 import wdl.transforms.draft2.wdlom2wom.WdlDraft2WomBundleMakers._

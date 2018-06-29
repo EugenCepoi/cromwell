@@ -7,9 +7,10 @@ import common.transforms.CheckedAtoB
 import org.scalatest.{Assertion, FlatSpec, Matchers, Succeeded}
 import wdl.draft3.transforms.parsing._
 import wdl.draft3.transforms.ast2wdlom._
-import wdl.draft3.transforms.wdlom2wom.expression.WdlomWomExpression
+import wdl.transforms.base.wdlom2wom.expression.WdlomWomExpression
 import wdl.model.draft3.elements.CommandPartElement.StringCommandPartElement
 import wdl.model.draft3.elements.ExpressionElement.StringLiteral
+import wdl.transforms.base.wdlom2wom._
 import wom.callable.Callable.{FixedInputDefinition, OptionalInputDefinition}
 import wom.callable.MetaValueElement.{MetaValueElementBoolean, MetaValueElementObject}
 import wom.callable.{CallableTaskDefinition, WorkflowDefinition}

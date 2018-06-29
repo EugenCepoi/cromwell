@@ -6,7 +6,10 @@ import scala.collection.JavaConverters._
 
 case class Draft3GenericAst(ast: Ast) extends GenericAst {
   override def getAttribute(attr: String): GenericAstNode = Option(ast.getAttribute(attr)).map(Draft3GenericAstNode.apply).orNull
-  override def getAttributes: Map[String, GenericAstNode] = ast.getAttributes.asScala.toMap map { case (key, value) => key -> Draft3GenericAstNode(value) }
+  override def getAttributes: Map[String, GenericAstNode] = ast.getAttributes.asScala.toMap map {
+    case (key, null) => key -> null
+    case (key, value) => key -> Draft3GenericAstNode(value)
+  }
   override def getName: String = ast.getName
 }
 
@@ -26,5 +29,7 @@ object Draft3GenericAstNode {
     case list: AstList => Draft3GenericAstList(list)
     case ast: Ast => Draft3GenericAst(ast)
     case terminal: Terminal => Draft3GenericTerminal(terminal)
+    case null =>
+      throw new Exception
   }
 }

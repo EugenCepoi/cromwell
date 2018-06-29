@@ -76,8 +76,8 @@ object WomtoolMain extends App {
     import common.Checked
     import wdl.draft3.transforms.ast2wdlom.{astToFileElement, wrapAst}
     import wdl.draft3.transforms.parsing.fileToAst
-    import wdl.draft3.transforms.wdlom2wdl.WdlWriter.ops._
-    import wdl.draft3.transforms.wdlom2wdl.WdlWriterImpl.fileElementWriter
+    import wdl.transforms.base.wdlom2wdl.WdlWriter.ops._
+    import wdl.transforms.base.wdlom2wdl.WdlWriterImpl.fileElementWriter
     import wdl.model.draft3.elements.FileElement
 
     val loader = fileToAst andThen wrapAst andThen astToFileElement

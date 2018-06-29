@@ -6,8 +6,8 @@ import common.Checked
 import org.scalatest.{FlatSpec, Matchers}
 import wdl.draft3.transforms.ast2wdlom._
 import wdl.draft3.transforms.parsing.{FileStringParserInput, fileToAst, stringToAst}
-import wdl.draft3.transforms.wdlom2wdl.WdlWriter.ops._
-import wdl.draft3.transforms.wdlom2wdl.WdlWriterImpl.fileElementWriter
+import wdl.transforms.base.wdlom2wdl.WdlWriter.ops._
+import wdl.transforms.base.wdlom2wdl.WdlWriterImpl.fileElementWriter
 import wdl.model.draft3.elements.FileElement
 
 class WdlomToWdlFileSpec extends FlatSpec with Matchers {
