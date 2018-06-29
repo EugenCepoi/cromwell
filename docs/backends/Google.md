@@ -105,7 +105,7 @@ A [JSON key file for the service account](../wf_options/Google.md) must be passe
 
 In the likely event that this service account does not have access to Cromwell's default google project the `google_project` workflow option must be set. In the similarly likely case that this service account can not access Cromwell's default google bucket, the `jes_gcs_root` workflow option should be set appropriately.
 
-Regarding the interaction of `user_service_account_json` with private Docker images please see the `Docker` section below.  
+For information on the interaction of `user_service_account_json` with private Docker images please see the `Docker` section below.  
 
 **Docker**
 
@@ -177,7 +177,8 @@ Cromwell will use this authorization for encrypting the Google KMS key.
 The equivalents of `key-name` and `auth` can also be specified in workflow options which will take
 precedence over values specified in configuration. In workflow options the key `docker_credentials_key_name` corresponds to the config key `key-name`.
 If a `user_service_account_json` value is specified in workflow options that will take precedence over the value associated with
-the config `auth` value. If either `docker_credentials_key_name` or `user_service_account_json` is provided in workflow options
+the config `auth` value (see the `User Service Account` section above).
+If either `docker_credentials_key_name` or `user_service_account_json` is provided in workflow options
 then the corresponding private Docker configuration value is not required.
 
 Example PAPI v2 workflow options for specifying private Docker configuration: 
