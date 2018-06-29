@@ -13,8 +13,8 @@ import wom.callable.MetaKvPair
 
 package object ast2wdlom {
 
-  val wrapAst: CheckedAtoB[Ast, GenericAst] = CheckedAtoB.fromCheck { a => BiscayneGenericAst(a).validNelCheck }
-  val wrapAstNode: CheckedAtoB[AstNode, GenericAstNode] = CheckedAtoB.fromCheck { a => BiscayneGenericAstNode(a).validNelCheck }
+  val wrapAst: CheckedAtoB[Ast, GenericAst] = CheckedAtoB.fromCheck { a => Draft3GenericAst(a).validNelCheck }
+  val wrapAstNode: CheckedAtoB[AstNode, GenericAstNode] = CheckedAtoB.fromCheck { a => Draft3GenericAstNode(a).validNelCheck }
 
   // meta sections
   implicit val astNodeToMetaKvPair: CheckedAtoB[GenericAstNode, MetaKvPair] = AstNodeToMetaKvPair.astNodeToMetaKvPair

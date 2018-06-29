@@ -4,27 +4,27 @@ import wdl.draft3.parser.WdlParser.{Ast, AstList, AstNode, Terminal}
 import wdl.transforms.base.ast2wdlom.{GenericAst, GenericAstList, GenericAstNode, GenericTerminal}
 import scala.collection.JavaConverters._
 
-case class BiscayneGenericAst(ast: Ast) extends GenericAst {
-  override def getAttribute(attr: String): GenericAstNode = BiscayneGenericAstNode(ast.getAttribute(attr))
-  override def getAttributes: Map[String, GenericAstNode] = ast.getAttributes.asScala.toMap map { case (key, value) => key -> BiscayneGenericAstNode(value) }
+case class Draft3GenericAst(ast: Ast) extends GenericAst {
+  override def getAttribute(attr: String): GenericAstNode = Option(ast.getAttribute(attr)).map(Draft3GenericAstNode.apply).orNull
+  override def getAttributes: Map[String, GenericAstNode] = ast.getAttributes.asScala.toMap map { case (key, value) => key -> Draft3GenericAstNode(value) }
   override def getName: String = ast.getName
 }
 
-case class BiscayneGenericTerminal(terminal: Terminal) extends GenericTerminal {
+case class Draft3GenericTerminal(terminal: Terminal) extends GenericTerminal {
   override def getSourceString: String = terminal.getSourceString
   override def getTerminalStr: String = terminal.getTerminalStr
   override def getLine: Int = terminal.getLine
   override def getColumn: Int = terminal.getColumn
 }
 
-case class BiscayneGenericAstList(astList: AstList) extends GenericAstList {
-  override def astNodeList: Seq[GenericAstNode] = astList.asScala.toSeq map BiscayneGenericAstNode.apply
+case class Draft3GenericAstList(astList: AstList) extends GenericAstList {
+  override def astNodeList: Seq[GenericAstNode] = astList.asScala.toSeq map Draft3GenericAstNode.apply
 }
 
-object BiscayneGenericAstNode {
+object Draft3GenericAstNode {
   def apply(astNode: AstNode): GenericAstNode = astNode match {
-    case list: AstList => BiscayneGenericAstList(list)
-    case ast: Ast => BiscayneGenericAst(ast)
-    case terminal: Terminal => BiscayneGenericTerminal(terminal)
+    case list: AstList => Draft3GenericAstList(list)
+    case ast: Ast => Draft3GenericAst(ast)
+    case terminal: Terminal => Draft3GenericTerminal(terminal)
   }
 }
