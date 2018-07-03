@@ -172,6 +172,7 @@ object PipelinesApiInitializationActorSpec {
     """
       |dockerhub {
       |  account = "my@docker.account"
+      |  # no secrets here guys this is literally just `echo -n username:password | base64`
       |  token = "dXNlcm5hbWU6cGFzc3dvcmQ="
       |}
       | """.stripMargin))

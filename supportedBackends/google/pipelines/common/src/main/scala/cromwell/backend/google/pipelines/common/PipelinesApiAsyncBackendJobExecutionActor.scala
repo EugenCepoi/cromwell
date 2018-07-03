@@ -567,12 +567,12 @@ class PipelinesApiAsyncBackendJobExecutionActor(override val standardParams: Sta
         case (Status.NOT_FOUND, Some(JesFailedToDelocalize)) => Future.successful(FailedNonRetryableExecutionHandle(FailedToDelocalizeFailure(runStatus.prettyPrintedError, jobTag, Option(standardPaths.error))))
         case (Status.ABORTED, Some(JesUnexpectedTermination)) => handleUnexpectedTermination(runStatus.errorCode, runStatus.prettyPrintedError, returnCode)
         case _ if isDockerPullFailure =>
-          val prefix = s"Unable to pull Docker image '$jobDockerImage' "
-          val suffix = if (hasDockerCredentials)
-            "but Docker credentials are present; is this Docker account authorized to pull the image?" else
+          val unable = s"Unable to pull Docker image '$jobDockerImage' "
+          val details = if (hasDockerCredentials)
+            "but Docker credentials are present; is this Docker account authorized to pull the image? " else
             "and there are effectively no Docker credentials present (one or more of token, authorization, or Google KMS key may be missing). " +
-            "Please check your private Docker configuration and/or the pull access for this image."
-          val message = prefix + suffix + " " + runStatus.prettyPrintedError
+            "Please check your private Docker configuration and/or the pull access for this image. "
+          val message = unable + details + runStatus.prettyPrintedError
           Future.successful(FailedNonRetryableExecutionHandle(StandardException(
             runStatus.errorCode, message, jobTag, returnCode, standardPaths.error), returnCode))
         case _ => Future.successful(FailedNonRetryableExecutionHandle(StandardException(
