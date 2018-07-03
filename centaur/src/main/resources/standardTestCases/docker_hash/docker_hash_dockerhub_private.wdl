@@ -3,7 +3,7 @@ task dockerhub {
         echo "hello"
     }
     runtime {
-        docker: "ruchim/dropseq"
+        docker: "broadinstitute/cloud-cromwell:dev"
     }
 }
 
