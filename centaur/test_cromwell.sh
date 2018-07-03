@@ -108,8 +108,13 @@ cd "${RUN_DIR}"
 
 TEST_STATUS="failed"
 
-sbt coverage centaur/it:compile
-CP=$(sbt coverage "export centaur/it:dependencyClasspath" -error)
+if [[ "${CENTAUR_SBT_COVERAGE}" == "true" ]]; then
+    sbt coverage centaur/it:compile
+    CP=$(sbt coverage "export centaur/it:dependencyClasspath" -error)
+else
+    sbt centaur/it:compile
+    CP=$(sbt "export centaur/it:dependencyClasspath" -error)
+fi
 
 if [ -n "${TEST_CASE_DIR}" ]; then
     RUN_SPECIFIED_TEST_DIR_CMD="-Dcentaur.standardTestCasePath=${TEST_CASE_DIR}"
@@ -124,18 +129,19 @@ CENTAUR_SEND_RECEIVE_TIMEOUT="-Dcentaur.sendReceiveTimeout='${CROMWELL_TIMEOUT}'
 CENTAUR_LOG_REQUEST_FAILURES="-Dcentaur.log-request-failures=true"
 CENTAUR_CONF="${CENTAUR_LOG_REQUEST_FAILURES} ${CENTAUR_CROMWELL_MODE} ${CENTAUR_CROMWELL_JAR} ${CENTAUR_CROMWELL_CONF} ${CENTAUR_CROMWELL_LOG} ${CENTAUR_CROMWELL_RESTART} ${CENTAUR_SEND_RECEIVE_TIMEOUT}"
 
+TEST_DESCRIPTION="Running Centaur with sbt test"
+TEST_COMMAND="java ${RUN_SPECIFIED_TEST_DIR_CMD} ${CENTAUR_CONF} -cp $CP org.scalatest.tools.Runner -R centaur/target/scala-2.12/it-classes -oD -u target/test-reports -PS${TEST_THREAD_COUNT}"
+
 if [[ -n ${EXCLUDE_TAG[*]} ]]; then
-    echo "Running Centaur filtering out ${EXCLUDE_TAG[*]} tests"
+    TEST_DESCRIPTION=${TEST_DESCRIPTION}" excluding ${EXCLUDE_TAG[*]} tests"
     EXCLUDE=""
     for val in "${EXCLUDE_TAG[@]}"; do
-        EXCLUDE="-l $val "${EXCLUDE}
+        EXCLUDE=" -l $val"${EXCLUDE}
     done
-    TEST_COMMAND="java ${RUN_SPECIFIED_TEST_DIR_CMD} ${CENTAUR_CONF} -cp $CP org.scalatest.tools.Runner -R centaur/target/scala-2.12/it-classes -oD -PS${TEST_THREAD_COUNT} "${EXCLUDE}
-else
-    echo "Running Centaur with sbt test"
-    TEST_COMMAND="java ${RUN_SPECIFIED_TEST_DIR_CMD} ${CENTAUR_CONF} -cp $CP org.scalatest.tools.Runner -R centaur/target/scala-2.12/it-classes -oD -PS${TEST_THREAD_COUNT}"
+    TEST_COMMAND=${TEST_COMMAND}${EXCLUDE}
 fi
 
+echo "${TEST_DESCRIPTION}"
 echo "TEST_COMMAND is ${TEST_COMMAND}"
 
 eval "${TEST_COMMAND} >> ${CENTAUR_LOG} 2>&1"
