@@ -6,9 +6,8 @@ import scala.collection.JavaConverters._
 
 case class BiscayneGenericAst(ast: Ast) extends GenericAst {
   override def getAttribute(attr: String): GenericAstNode = Option(ast.getAttribute(attr)).map(BiscayneGenericAstNode.apply).orNull
-  override def getAttributes: Map[String, GenericAstNode] = ast.getAttributes.asScala.toMap map {
-    case (key, null) => key -> null
-    case (key, value) => key -> BiscayneGenericAstNode(value)
+  override def getAttributes: Map[String, GenericAstNode] = ast.getAttributes.asScala.toMap collect {
+    case (key, value) if value != null => key -> BiscayneGenericAstNode(value)
   }
   override def getName: String = ast.getName
 }

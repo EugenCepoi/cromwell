@@ -11,7 +11,9 @@ import wdl.model.draft3.elements._
 object AstToTaskDefinitionElement {
 
   def astToTaskDefinitionElement(implicit astNodeToTaskSectionElement: CheckedAtoB[GenericAstNode, TaskSectionElement]
-                                ): CheckedAtoB[GenericAst, TaskDefinitionElement] = CheckedAtoB.fromErrorOr("convert AST to scatter section") { a =>
+                                ): CheckedAtoB[GenericAst, TaskDefinitionElement] = CheckedAtoB.fromErrorOr
+  { a: GenericAst => s"read task definition${a.lineAndColumnString}" }
+  { a =>
 
     val nameElementValidation: ErrorOr[String] = astNodeToString(a.getAttribute("name")).toValidated
     val sectionsValidation: ErrorOr[Vector[TaskSectionElement]] = a.getAttributeAsVector[TaskSectionElement]("sections").toValidated

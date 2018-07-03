@@ -14,6 +14,24 @@ trait GenericAstNode {
     case list: GenericAstList => list.astNodeList.toVector.validNelCheck
     case _ => s"Invalid target for astListAsVector: ${getClass.getSimpleName}".invalidNelCheck
   }
+
+  def allTerminals: Set[GenericTerminal] = this match {
+    case t: GenericTerminal => Set(t)
+    case ast: GenericAst => ast.getAttributes.values.toSet[GenericAstNode] flatMap { _.allTerminals }
+    case astList: GenericAstList => astList.astNodeList.toSet[GenericAstNode] flatMap { _.allTerminals }
+  }
+
+  def firstTerminal: Option[GenericTerminal] = {
+    def foldFunction(acc: Option[GenericTerminal], next: GenericTerminal): Option[GenericTerminal] = acc match {
+      case Some(t) if t.getLine > next.getLine || (t.getLine == next.getLine && t.getColumn > next.getColumn) => Some(next)
+      case None => Some(next)
+      case _ => acc
+    }
+
+    allTerminals.foldLeft[Option[GenericTerminal]](None)(foldFunction)
+  }
+
+  def lineAndColumnString = firstTerminal map { t => s" at line ${t.getLine} column ${t.getColumn}"} getOrElse("")
 }
 
 trait GenericAst extends GenericAstNode {

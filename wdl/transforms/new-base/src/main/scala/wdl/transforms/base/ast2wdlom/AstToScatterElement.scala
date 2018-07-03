@@ -9,7 +9,7 @@ import wdl.model.draft3.elements._
 object AstToScatterElement {
   def astToScatterElement(implicit astNodeToExpressionElement: CheckedAtoB[GenericAstNode, ExpressionElement],
                           astNodeToWorkflowGraphElement: CheckedAtoB[GenericAstNode, WorkflowGraphElement]
-                         ): CheckedAtoB[GenericAst, ScatterElement] = CheckedAtoB.fromErrorOr("convert AST to scatter section") { ast =>
+                         ): CheckedAtoB[GenericAst, ScatterElement] = CheckedAtoB.fromErrorOr("read scatter section") { ast =>
 
     val scatterVariableValidation: ErrorOr[GenericTerminal] = ast.getAttributeAs[GenericTerminal]("item").toValidated
 

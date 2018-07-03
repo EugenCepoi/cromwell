@@ -10,7 +10,7 @@ object AstToFileBodyElement {
   def astToFileBodyElement(implicit workflowConverter: CheckedAtoB[GenericAst, WorkflowDefinitionElement],
                            taskConverter: CheckedAtoB[GenericAst, TaskDefinitionElement],
                            structConverter: CheckedAtoB[GenericAst, StructElement]): CheckedAtoB[GenericAst, FileBodyElement] = {
-    CheckedAtoB.fromCheck("convert AST to FileBodyElement")(convert(workflowConverter, taskConverter, structConverter))
+    CheckedAtoB.fromCheck(convert(workflowConverter, taskConverter, structConverter))
   }
 
   def convert(workflowConverter: CheckedAtoB[GenericAst, WorkflowDefinitionElement],

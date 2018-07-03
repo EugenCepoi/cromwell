@@ -6,7 +6,7 @@ import wdl.model.draft3.elements.{CommandPartElement, CommandSectionElement, Com
 
 object AstToCommandSectionElement {
   def astToCommandSectionElement(implicit astNodeToCommandPartElement: CheckedAtoB[GenericAstNode, CommandPartElement]
-                                ): CheckedAtoB[GenericAst, CommandSectionElement] = CheckedAtoB.fromCheck("convert Ast to CommandSectionElement") { ast: GenericAst =>
+                                ): CheckedAtoB[GenericAst, CommandSectionElement] = CheckedAtoB.fromCheck { ast: GenericAst =>
 
     ast.getAttributeAsVector[CommandPartElement]("parts") map { parts =>
       val lines = makeLines(parts)
